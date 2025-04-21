@@ -78,7 +78,7 @@ export class LoadBalancer{
                 headers: req.headers as HeadersInit,
                 body: req.method !== 'GET' ? body : undefined
             });
-
+            console.log(targetUrl + req.url,'what')
             if (response.ok) {
                 const currentCount = this.connectionCounts.get(targetUrl) || 0;
                 this.connectionCounts.set(targetUrl, currentCount + 1);
