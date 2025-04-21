@@ -6,10 +6,15 @@ export class LoadBalancer{
     private currentStrategy: Strategy;
     private currentIndex: number = 0;
     private connectionCounts: Map<string, number> = new Map();
+    private roundRobinLock: boolean = false;
     
     constructor(urls: string[],portNumber:number, strategy: Strategy = Strategy.ROUND_ROBIN){
         this.URLS = urls;
-        this.currentStrategy = strategy
+        this.currentStrategy = strategy;
+        // Initialize connection counts for all URLs
+        this.URLS.forEach(url => {
+            this.connectionCounts.set(url, 0);
+        });
     }
     addURL(url: string){
         this.URLS.push(url)
@@ -27,7 +32,12 @@ export class LoadBalancer{
     }
 
     nextURL(): string {
-        if(this.currentStrategy == Strategy.ROUND_ROBIN) return this.currentIndex == this.URLS.length - 1  || this.currentIndex ==  0 ?  this.URLS[0]: this.URLS[this.currentIndex++];
+        if(this.currentStrategy == Strategy.ROUND_ROBIN) {
+            // Use a simple round-robin approach
+            const url = this.URLS[this.currentIndex];
+            this.currentIndex = (this.currentIndex + 1) % this.URLS.length;
+            return url;
+        }
         if(this.currentStrategy == Strategy.LEAST_CONNECTIONS){
             let sortedByConnections = this.getSortedUrlConnections();
             const leastConnectedUrl = sortedByConnections[0]?.[0];
@@ -66,7 +76,7 @@ export class LoadBalancer{
             const response = await fetch(targetUrl + req.url, {
                 method: req.method,
                 headers: req.headers as HeadersInit,
-                body: req.method !== 'GET' ? body : ''
+                body: req.method !== 'GET' ? body : undefined
             });
 
             if (response.ok) {

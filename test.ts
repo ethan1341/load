@@ -16,22 +16,17 @@ console.log('Test servers should be running on ports 3001 and 3002');
 async function testLoadBalancer() {
     console.log('Starting load balancer test...');
     
-    // Make multiple concurrent requests
-    const requests = [
-        fetch('http://localhost:3000/api/test'),
-        fetch('http://localhost:3000/api/test'),
-        fetch('http://localhost:3000/api/test')
-    ];
-    
-    try {
-        const responses = await Promise.all(requests);
-        const results = await Promise.all(responses.map(r => r.text()));
-        console.log('All responses received:');
-        results.forEach((result, index) => {
-            console.log(`Request ${index + 1}:`, result);
-        });
-    } catch (error) {
-        console.error('Error during test:', error);
+    // Make sequential requests to better demonstrate round-robin
+    for (let i = 0; i < 6; i++) {
+        try {
+            const response = await fetch('http://localhost:3000/api/test');
+            const result = await response.text();
+            console.log(`Request ${i + 1}:`, result);
+            // Add a small delay between requests
+            await new Promise(resolve => setTimeout(resolve, 100));
+        } catch (error) {
+            console.error(`Error during request ${i + 1}:`, error);
+        }
     }
 }
 

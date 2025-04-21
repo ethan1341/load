@@ -1,14 +1,16 @@
 import * as http from 'http';
-
-const port = process.argv[2] || 3001;
-const serverId = process.argv[3] || '1';
+const port = process.argv[2] 
+const serverId = process.argv[3]
 
 const server = http.createServer((req, res) => {
+    const fullUrl = `http://${req.headers.host}${req.url}`;
     res.writeHead(200, { 'Content-Type': 'application/json' });
     res.end(JSON.stringify({
         message: `Hello from server ${serverId} on port ${port}`,
         path: req.url,
-        method: req.method
+        method: req.method,
+        fullUrl: fullUrl,
+        headers: req.headers
     }));
 });
 
