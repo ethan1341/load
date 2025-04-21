@@ -1,0 +1,13 @@
+{
+  "dependencies": {
+    "@types/http-server": "^0.12.4",
+    "@types/raw-body": "^2.1.4",
+    "http-server": "^14.1.1",
+    "raw-body": "^3.0.0"
+  },
+  "devDependencies": {
+    "@types/node": "^22.14.1",
+    "ts-node": "^10.9.2",
+    "typescript": "^5.8.3"
+  }
+}
